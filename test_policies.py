@@ -1,12 +1,10 @@
 import random
 import sys
-import minimax as minimax
-import mcts
-import kalah
 import argparse
 
-from kalah import Kalah
 from peg_game import PeggingGame
+from initial_policy import initial_policy
+from greedy_policy import greedy_policy
 
 class MCTSTestError(Exception):
     pass
@@ -90,27 +88,20 @@ def test_game(game, count, p_random, p1_policy_fxn, p2_policy_fxn):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Test MCTS agent")
     parser.add_argument('--count', dest='count', type=int, action="store", default=2, help='number of games to play (default=2')
-    parser.add_argument('--time', dest='time', type=float, action="store", default=0.1, help='time for MCTS per move')
-    parser.add_argument('--random', dest="p_random", type=float, action="store", default = 0.0, help="p(random instead of minimax) (default=0.0)")
-    parser.add_argument('--game', dest="game", choices=["kalah", "pegging"], default="pegging", help="game to play")
     args = parser.parse_args()
 
     try:
         if args.count < 1:
             raise MCTSTestError("count must be positive")
-        if args.p_random < 0.0 or args.p_random > 1.0:
-            raise MCTSTestError("p_random must be between 0.0 and 1.0 inclusive")
-        if args.time <= 0:
-            raise MCTSTestError("time must be positive")
 
-        game = PeggingGame(4) if args.game == "pegging" else Kalah(6, 4)
-        h = (lambda pos: pos.score()[0] - pos.score()[1]) if args.game == "pegging" else minimax.seeds_stored_heuristic
+        game = PeggingGame(4)
+        h = (lambda pos: pos.score()[0] - pos.score()[1])
     
         test_game(game,
                   args.count,
-                  args.p_random,
-                  lambda: mcts.mcts_policy(args.time),
-                  lambda: minimax.minimax_policy(args.depth, minimax.Heuristic(h)))
+                  0,
+                  lambda: initial_policy(),
+                  lambda: greedy_policy())
         sys.exit(0)
     except MCTSTestError as err:
         print(sys.argv[0] + ":", str(err))
