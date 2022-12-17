@@ -12,7 +12,7 @@ from test_policies import create_agent
 
 from simulate import simulate
 
-N_SIMULATIONS = 100 
+N_SIMULATIONS = 100
 
 # Create a list of all possible ranks and suits
 RANKS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
@@ -73,19 +73,21 @@ def main():
     print(len(y_train))
 
     model = Sequential()
-    model.add(Dense(10, activation="relu", input_shape=(4, 17)))
+    model.add(Dense(10, input_shape=(4, 17)))
     model.add(Dropout(0.1))
-    model.add(Dense(1, activation="sigmoid"))
+    model.add(Dense(1, activation=None))
 
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_absolute_error'])
 
     model.fit(x=x_train, y=y_train, batch_size=32, epochs=10)
 
     # Evaluate the model on the testing data
-    results = model.evaluate(x=x_test, y=y_test)
-    print(results)
-
-
+    predictions = model.predict(x_test)
+    correct = y_test
+    for p, c in zip(predictions, correct):
+        print("PREDICTION: ", p)
+        print("CORRECT: ", c)
+    print(model.summary())
 
 if __name__ == "__main__":
     main()
