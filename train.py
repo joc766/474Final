@@ -38,7 +38,7 @@ def create_encodings(cards):
             suit_encoding[3] = 1
         encoding = np.concatenate((rank_encoding, suit_encoding))
         if input_data is not None:
-            input_data = np.vstack((input_data, encoding))
+            input_data = np.concatenate((input_data, encoding))
         else:
             input_data = encoding
     return input_data
@@ -73,7 +73,7 @@ def main():
     print(len(y_train))
 
     model = Sequential()
-    model.add(Dense(10, input_shape=(4, 17)))
+    model.add(Dense(10, input_shape=(68,)))
     model.add(Dropout(0.1))
     model.add(Dense(1, activation=None))
 
