@@ -81,9 +81,11 @@ def main():
 
     model.fit(x=x_train, y=np.asarray(y_train), batch_size=32, epochs=10)
 
-    # Evaluate the model on the testing data
-    results = model.evaluate(x=x_test, y=np.asarray(y_test))
-    print(results)
+    # get predictions, convert to class 0, 1, 2, and compare to test data
+    y_predict = [ y for y in model.predict(np.matrix(x_test))]
+    y_correct = [y for y in y_test]
+    for p, c in zip(y_predict, y_correct):
+        print(f"PREDICTION: {p}\nCORRECT: {c}\n\n")
 
 
 
