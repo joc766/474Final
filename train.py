@@ -19,6 +19,7 @@ RANKS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 SUITS = ['S', 'D', 'C', 'H']
 
 # Function to convert a list of cards into a feature tensor
+# TODO change to 52 bit encoding
 def create_encodings(cards):
     # Loop through each card and create the one-hot encoding
     input_data = None
@@ -40,7 +41,7 @@ def create_encodings(cards):
             input_data = np.vstack((input_data, encoding))
         else:
             input_data = encoding
-    return np.matrix(input_data)
+    return input_data
 
 def main():
     x_all = []
@@ -55,17 +56,21 @@ def main():
         y_all.append(sim_results[1])
 
     # Convert the input data into feature tensors
-    x_encoded = [np.asarray(create_encodings(cards)) for cards in x_all]
+    x_encoded = np.array([create_encodings(cards) for cards in x_all])
 
     # split into training data and test data
     test_size = int(len(x_all) / 5)
     train_size = len(x_all) - test_size
 
     x_test = x_encoded[:test_size] # TODO look up why not matrix
-    y_test = y_all[:test_size]
+    y_test = np.array(y_all[:test_size])
 
     x_train = x_encoded[test_size:]
-    y_train = y_all[test_size:]
+    y_train = np.array(y_all[test_size:])
+    print(x_train.shape)
+    print(y_train.shape)
+    print(len(x_train))
+    print(len(y_train))
 
     model = Sequential()
     model.add(Dense(10, activation="relu", input_shape=(4, 17)))
