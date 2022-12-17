@@ -21,7 +21,7 @@ SUITS = ['S', 'D', 'C', 'H']
 # Function to convert a list of cards into a feature tensor
 def create_encodings(cards):
     # Loop through each card and create the one-hot encoding
-    input_data = []
+    input_data = None
     for card in cards:
         rank, suit = card
         rank_encoding = np.zeros(13)
@@ -36,8 +36,11 @@ def create_encodings(cards):
         else:
             suit_encoding[3] = 1
         encoding = np.concatenate((rank_encoding, suit_encoding))
-        input_data.append(encoding)
-    return input_data
+        if input_data is not None:
+            input_data = np.vstack((input_data, encoding))
+        else:
+            input_data = encoding
+    return np.matrix(input_data)
 
 def main():
     x_all = []
