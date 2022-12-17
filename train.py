@@ -61,13 +61,13 @@ def main():
     x_test = x_encoded[:test_size] # TODO look up why not matrix
     y_test = y_all[:test_size]
 
-    x_train = np.matrix(x_encoded[test_size:])
-    y_train = np.matrix(y_all[test_size:])
+    x_train = x_encoded[test_size:]
+    y_train = y_all[test_size:]
 
     model = Sequential()
-    model.add(Dense(10, activation="relu", input_dim = x_train.shape[1]))
+    model.add(Dense(10, activation="relu", input_shape=(4, 17)))
     model.add(Dropout(0.1))
-    model.add(Dense(y_train.shape[1]))
+    model.add(Dense(y_train.shape[1], activation="sigmoid"))
 
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_absolute_error'])
 
