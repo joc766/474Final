@@ -44,7 +44,7 @@ def peg(position: State):
                 best_card = card
     return best_card
 
-def initial_policy():
+def heuristic_policy():
     def policy_func(position: State):
         action = peg(position)
         return action

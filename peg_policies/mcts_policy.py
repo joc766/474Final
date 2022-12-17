@@ -114,7 +114,6 @@ class MonteCarloSearch:
 
 def mcts_policy(cpu_time: float):
 
-    
     def create_policy_func(position: State):
         end_time = time.time() + cpu_time
         mct = MonteCarloSearch(position)
@@ -122,4 +121,5 @@ def mcts_policy(cpu_time: float):
         return mct.get_best_move()
 
     return create_policy_func
+    
     

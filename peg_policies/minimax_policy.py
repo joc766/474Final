@@ -1,5 +1,3 @@
-from kalah import Kalah
-
 class Heuristic:
     ''' A wrapper for a heuristic function that counts how many times the
         heuristic is called.
@@ -30,30 +28,6 @@ class Heuristic:
         ''' Returns the number of times this heiristic has been called.
         '''
         return self.calls
-
-
-def seeds_stored_heuristic(pos):
-    ''' A simple heuristic for Kalah.  Returns the difference in the number of seeds
-        in P1's store vs. P2's store (P1 - P2) unless the position is terminal,
-        in which case it returns +/- total seeds in the game (positive for P1 win,
-        negative for P2 win).
-
-        pos -- a Kalah position
-    '''
-    if pos.is_terminal():
-        value = pos.payoff() * (pos._seeds_stored(0) + pos._seeds_stored(1))
-    else:
-        value =  pos._seeds_stored(0) - pos._seeds_stored(1)
-    return value
-
-
-def seeds_stored_heuristic_soft_winner(pos):
-    ''' A heuristic function for Kalah.  Returns the difference in seeds stored for
-        each player (P1 - P2), unadjusted for terminal positions.
-
-        pos -- a Kalah position
-    '''
-    return pos._seeds_stored(0) - pos._seeds_stored(1)
 
 
 def minimax_policy(depth, h):

@@ -2,9 +2,15 @@ import random
 import sys
 import argparse
 
+import peg_policies.minimax_policy as minimax
 from peg_game import PeggingGame
-from initial_policy import initial_policy
-from greedy_policy import greedy_policy
+from peg_policies.heuristic_policy import heuristic_policy
+from peg_policies.greedy_policy import greedy_policy
+from peg_policies.mcts_policy import mcts_policy
+from peg_policies.minimax_policy import minimax_policy
+
+TIME = 0.01
+DEPTH = 14
 
 class MCTSTestError(Exception):
     pass
@@ -84,24 +90,39 @@ def test_game(game, count, p_random, p1_policy_fxn, p2_policy_fxn):
 
     print("NET: ", margin, "; WINS: ", wins, sep="")
 
+def create_agent(agent):
+    if agent == "mcts":
+        return lambda: mcts_policy(TIME)
+    elif agent == "minimax":
+        h = (lambda pos: pos.score()[0] - pos.score()[1])
+        return lambda: minimax_policy(DEPTH, minimax.Heuristic(h))
+    elif agent == "greedy":
+        return lambda: greedy_policy()
+    elif agent == "heuristic":
+        return lambda: heuristic_policy()
+
     
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Test MCTS agent")
-    parser.add_argument('--count', dest='count', type=int, action="store", default=2, help='number of games to play (default=2')
+    parser.add_argument("--count", dest="count", type=int, action="store", default=2, help="number of games to play (default=2")
+    parser.add_argument("--agent1", dest="agent1", choices=["mcts", "minimax", "greedy", "heuristic"], default="mcts", help="agent to test (default=mcts)")
+    parser.add_argument("--agent2", dest="agent2", choices=["mcts", "minimax", "greedy", "heuristic"], default="mcts", help="agent to test (default=mcts)")
     args = parser.parse_args()
 
     try:
         if args.count < 1:
             raise MCTSTestError("count must be positive")
 
+        # these 3 can be used to simulate
         game = PeggingGame(4)
-        h = (lambda pos: pos.score()[0] - pos.score()[1])
-    
+        agent1 = create_agent(args.agent1)
+        agent2 = create_agent(args.agent2)
+
         test_game(game,
                   args.count,
-                  0,
-                  lambda: initial_policy(),
-                  lambda: greedy_policy())
+                  0.0,
+                  agent1,
+                  agent2)
         sys.exit(0)
     except MCTSTestError as err:
         print(sys.argv[0] + ":", str(err))
