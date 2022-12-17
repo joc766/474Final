@@ -55,7 +55,7 @@ def main():
         y_all.append(sim_results[1])
 
     # Convert the input data into feature tensors
-    x_encoded = [create_encodings(cards) for cards in x_all]
+    x_encoded = [np.asarray(create_encodings(cards)) for cards in x_all]
 
     # split into training data and test data
     test_size = int(len(x_all) / 5)
@@ -74,10 +74,10 @@ def main():
 
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_absolute_error'])
 
-    model.fit(x=x_train, y=y_train, batch_size=32, epochs=10)
+    model.fit(x=x_train, y=np.asarray(y_train), batch_size=32, epochs=10)
 
     # Evaluate the model on the testing data
-    results = model.evaluate(x=x_test, y=y_test)
+    results = model.evaluate(x=x_test, y=np.asarray(y_test))
     print(results)
 
 
