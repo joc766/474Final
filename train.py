@@ -70,7 +70,7 @@ def main():
     model = Sequential()
     model.add(Dense(10, activation="relu", input_shape=(4, 17)))
     model.add(Dropout(0.1))
-    model.add(Dense(y_train.shape[1], activation="sigmoid"))
+    model.add(Dense(1, activation="sigmoid"))
 
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_absolute_error'])
 
