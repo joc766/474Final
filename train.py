@@ -79,13 +79,11 @@ def main():
 
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_absolute_error'])
 
-    model.fit(x=x_train, y=np.asarray(y_train), batch_size=32, epochs=10)
+    model.fit(x=x_train, y=y_train, batch_size=32, epochs=10)
 
-    # get predictions, convert to class 0, 1, 2, and compare to test data
-    y_predict = [ y for y in model.predict(np.matrix(x_test))]
-    y_correct = [y for y in y_test]
-    for p, c in zip(y_predict, y_correct):
-        print(f"PREDICTION: {p}\nCORRECT: {c}\n\n")
+    # Evaluate the model on the testing data
+    results = model.evaluate(x=x_test, y=y_test)
+    print(results)
 
 
 
