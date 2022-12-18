@@ -38,7 +38,7 @@ def create_encodings(cards):
             suit_encoding[3] = 1
         encoding = np.concatenate((rank_encoding, suit_encoding))
         if input_data is not None:
-            input_data = np.concatenate((input_data, encoding))
+            input_data = np.vstack((input_data, encoding))
         else:
             input_data = encoding
     return input_data
@@ -58,22 +58,35 @@ def main():
     # Convert the input data into feature tensors
     x_encoded = np.array([create_encodings(cards) for cards in x_all])
 
+    # find the max and min of the y data
+    max_y = max(y_all)
+    min_y = min(y_all)
+    size_range = max_y - min_y
+    # one-hot encode the y data
+    y_encoded = []
+    for y in y_all:
+        encoding = np.zeros(size_range)
+        encoding[y - min_y] = 1
+        y_encoded.append(encoding)
+    y_encoded = np.array(y_encoded)
+    print(y_encoded)
+    
     # split into training data and test data
     test_size = int(len(x_all) / 5)
     train_size = len(x_all) - test_size
 
     x_test = x_encoded[:test_size] # TODO look up why not matrix
-    y_test = np.array(y_all[:test_size])
+    y_test = np.array(y_encoded[:test_size])
 
     x_train = x_encoded[test_size:]
-    y_train = np.array(y_all[test_size:])
+    y_train = np.array(y_encoded[test_size:])
     print(x_train.shape)
     print(y_train.shape)
     print(len(x_train))
     print(len(y_train))
 
     model = Sequential()
-    model.add(Dense(10, input_shape=(68,)))
+    model.add(Dense(10, input_dim=x_train.shape[1]))
     model.add(Dropout(0.1))
     model.add(Dense(1, activation=None))
 
