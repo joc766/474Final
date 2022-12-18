@@ -12,7 +12,7 @@ from test_policies import create_agent
 
 from simulate import simulate
 
-N_SIMULATIONS = 100
+N_SIMULATIONS = 150
 
 # Create a list of all possible ranks and suits
 RANKS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
@@ -38,7 +38,7 @@ def create_encodings(cards):
             suit_encoding[3] = 1
         encoding = np.concatenate((rank_encoding, suit_encoding))
         if input_data is not None:
-            input_data = np.vstack((input_data, encoding))
+            input_data = np.concatenate((input_data, encoding))
         else:
             input_data = encoding
     return input_data
@@ -63,12 +63,9 @@ def main():
     min_y = min(y_all)
     size_range = max_y - min_y
     # one-hot encode the y data
-    print(min_y)
-    print(max_y)
-    print(size_range)
     y_encoded = []
     for y in y_all:
-        encoding = np.zeros(size_range)
+        encoding = np.zeros(size_range+1)
         encoding[y - min_y] = 1
         y_encoded.append(encoding)
     y_encoded = np.array(y_encoded)
@@ -89,20 +86,21 @@ def main():
     print(len(y_train))
 
     model = Sequential()
-    model.add(Dense(10, input_dim=x_train.shape[1]))
+    model.add(Dense(10, activation='relu', input_dim=x_train.shape[1]))
     model.add(Dropout(0.1))
-    model.add(Dense(y_train.shape[1], activation=None))
+    model.add(Dense(y_train.shape[1], activation='softmax'))
 
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_absolute_error'])
 
-    model.fit(x=x_train, y=y_train, batch_size=32, epochs=10)
+    model.fit(x=x_train, y=y_train, batch_size=5, epochs=200)
 
     # Evaluate the model on the testing data
     predictions = model.predict(x_test)
     correct = y_test
     for p, c in zip(predictions, correct):
-        print("PREDICTION: ", p)
-        print("CORRECT: ", c)
+        pred = [round(x,2) for x in p]
+        print(f"PREDICTION:{pred} ")
+        print(f"CORRECT: {c}")
     print(model.summary())
 
 if __name__ == "__main__":
