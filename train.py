@@ -63,6 +63,9 @@ def main():
     min_y = min(y_all)
     size_range = max_y - min_y
     # one-hot encode the y data
+    print(min_y)
+    print(max_y)
+    print(size_range)
     y_encoded = []
     for y in y_all:
         encoding = np.zeros(size_range)
