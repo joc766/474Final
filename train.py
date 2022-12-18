@@ -76,10 +76,10 @@ def main():
     train_size = len(x_all) - test_size
 
     x_test = x_encoded[:test_size] # TODO look up why not matrix
-    y_test = np.array(y_encoded[:test_size])
+    y_test = y_encoded[:test_size]
 
     x_train = x_encoded[test_size:]
-    y_train = np.array(y_encoded[test_size:])
+    y_train = y_encoded[test_size:]
     print(x_train.shape)
     print(y_train.shape)
     print(len(x_train))
@@ -88,7 +88,7 @@ def main():
     model = Sequential()
     model.add(Dense(10, input_dim=x_train.shape[1]))
     model.add(Dropout(0.1))
-    model.add(Dense(1, activation=None))
+    model.add(Dense(y_train.shape[1], activation=None))
 
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_absolute_error'])
 
