@@ -5,7 +5,7 @@ from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Input, Dense, Dropout, Flatten
 from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.utils import to_categorical
-from tensoflow.saved_model import SaveOptions
+from tensorflow.saved_model import SaveOptions
 
 from peg_game import PeggingGame
 from test_policies import create_agent
@@ -84,10 +84,10 @@ def main():
 
     model = Sequential()
     model.add(Flatten(input_shape=(4, 17)))
-    model.add(Dense(32, activation='relu', input_shape=(68,)))
-    model.add(Dropout(0.1))
     model.add(Dense(64, activation='relu', input_shape=(68,)))
-    model.add(Dropout(0.1))
+    model.add(Dropout(0.2))
+    model.add(Dense(64, activation='relu'))
+    model.add(Dropout(0.2))
     model.add(Dense(y_train.shape[1], activation='softmax'))
 
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
