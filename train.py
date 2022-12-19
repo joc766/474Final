@@ -1,5 +1,6 @@
 
 import numpy as np 
+import sys
 
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Input, Dense, Dropout, Flatten
@@ -52,7 +53,7 @@ def main():
 
     for i in range(N_SIMULATIONS):
         if i % 100 == 0:
-            print("Simulation", i)
+            print("Simulation", i, file=sys.stderr)
         game = PeggingGame(4)
         agent1 = create_agent("mcts")
         agent2 = create_agent("minimax")
@@ -60,7 +61,7 @@ def main():
         x_all.append(sim_results[0])
         y_all.append(sim_results[1])
     
-    print("SIMULATION COMPLETE")
+    print("SIMULATION COMPLETE", file=sys.stderr)
 
     # one-hot encode the x data
     x_encoded = np.array([create_encodings(cards) for cards in x_all])
