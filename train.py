@@ -96,7 +96,7 @@ def main():
     model.fit(x=x_train, y=y_train, batch_size=25, epochs=100)
 
     # Save the model
-    model.save("pegging_model", save_format="tf")
+    model.save("model.h5", save_format="tf")
 
     # Evaluate the model on the testing data
     predictions = model.predict(x_test)
