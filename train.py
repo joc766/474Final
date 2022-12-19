@@ -5,6 +5,7 @@ from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Input, Dense, Dropout, Flatten
 from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.utils import to_categorical
+from tensoflow.saved_model import SaveOptions
 
 from peg_game import PeggingGame
 from test_policies import create_agent
@@ -12,7 +13,7 @@ from test_policies import create_agent
 
 from simulate import simulate
 
-N_SIMULATIONS = 1000
+N_SIMULATIONS = 200
 
 # Create a list of all possible ranks and suits
 RANKS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
@@ -44,24 +45,26 @@ def create_encodings(cards):
     return input_data
 
 def main():
+
+    # Simulate the games
     x_all = []
     y_all = []
 
     for i in range(N_SIMULATIONS):
+        if i % 100 == 0:
+            print("Simulation", i)
         game = PeggingGame(4)
         agent1 = create_agent("mcts")
         agent2 = create_agent("minimax")
         sim_results = simulate(game, agent1, agent2)
         x_all.append(sim_results[0])
         y_all.append(sim_results[1])
+    
+    print("SIMULATION COMPLETE")
 
-    # Convert the input data into feature tensors
+    # one-hot encode the x data
     x_encoded = np.array([create_encodings(cards) for cards in x_all])
 
-    # find the max and min of the y data
-    max_y = max(y_all)
-    min_y = min(y_all)
-    size_range = max_y - min_y
     # one-hot encode the y data
     y_encoded = []
     for y in y_all:
@@ -69,31 +72,30 @@ def main():
         encoding[y+10] = 1
         y_encoded.append(encoding)
     y_encoded = np.array(y_encoded)
-    print(y_encoded)
     
     # split into training data and test data
     test_size = int(len(x_all) / 5)
-    train_size = len(x_all) - test_size
 
-    x_test = x_encoded[:test_size] # TODO look up why not matrix
+    x_test = x_encoded[:test_size] 
     y_test = y_encoded[:test_size]
 
     x_train = x_encoded[test_size:]
     y_train = y_encoded[test_size:]
-    print(x_train.shape)
-    print(y_train.shape)
-    print(len(x_train))
-    print(len(y_train))
 
     model = Sequential()
     model.add(Flatten(input_shape=(4, 17)))
-    model.add(Dense(10, activation='relu', input_shape=(68,)))
+    model.add(Dense(32, activation='relu', input_shape=(68,)))
+    model.add(Dropout(0.1))
+    model.add(Dense(64, activation='relu', input_shape=(68,)))
     model.add(Dropout(0.1))
     model.add(Dense(y_train.shape[1], activation='softmax'))
 
-    model.compile(optimizer='adam', loss='categorical_crossentropy')
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    model.fit(x=x_train, y=y_train, batch_size=5, epochs=400)
+    model.fit(x=x_train, y=y_train, batch_size=10, epochs=200)
+
+    # Save the model
+    model.save("pegging_model", save_format="tf")
 
     # Evaluate the model on the testing data
     predictions = model.predict(x_test)
@@ -101,8 +103,6 @@ def main():
     for p, c in zip(predictions, correct):
         print(f"PREDICTION: {', '.join('{:.2f}'.format(np.round(x,2)) for x in p)}")
         print(f"CORRECT:    {', '.join('{:.2f}'.format(np.round(x,2)) for x in c)}\n")
-
-    print(model.summary())
 
 if __name__ == "__main__":
     main()

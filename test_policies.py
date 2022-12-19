@@ -9,7 +9,7 @@ from peg_policies.greedy_policy import greedy_policy
 from peg_policies.mcts_policy import mcts_policy
 from peg_policies.minimax_policy import minimax_policy
 
-TIME = 0.01
+TIME = 0.05
 DEPTH = 14
 
 class MCTSTestError(Exception):

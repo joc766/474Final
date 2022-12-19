@@ -8,41 +8,14 @@ class MyPolicy(CribbagePolicy):
         self._policy = CompositePolicy(game, GreedyThrower(game), GreedyPegger(game))
         
     def keep(self, hand, scores, am_dealer):
-        # TODO consider the scores variable
-        # TODO probably shouldn't use two private attrs
-        # TODO return ties and start breaking non-arbitrarily
-        game = self._policy._game
-        crib = 1 if am_dealer else -1
-        def score_split(indices):
-            keep = []
-            throw = []
-            deck = game.deck()
-            deck.remove(hand)
-            remaining_cards = deck.peek(46)
-            for i in range(len(hand)):
-                if i in indices:
-                    throw.append(hand[i])
-                else:
-                    keep.append(hand[i])
-            total_score = 0
-            for card in remaining_cards:
-                total_score += score(game, keep, card, False)[0] + crib * score(game, throw, card, True)[0]
-            return keep, throw, total_score
+        """ Returns the (keep, throw) pair selected by this policy's
+            keep/throw policy.
 
-        throw_indices = game.throw_indices()
-        random.shuffle(throw_indices)
-
-        moves = map(lambda i: score_split(i), throw_indices)
-        maxes = []
-        max_score = None
-        for move in moves:
-            if max_score is None or move[2] > max_score:
-                maxes = [move]
-                max_score = move[2]
-            elif move[2] == max_score:
-                maxes.append(move)
-        choice = self.apply_heuristic(am_dealer, maxes)
-        keep, throw, _ = choice
+            hand -- a list of cards
+            scores -- the current scores, with this policy's score first
+            am_dealer -- a boolean flag indicating whether the crib
+                         belongs to this policy
+        """
         return keep, throw
 
     def apply_heuristic(self, am_dealer, maxes):
