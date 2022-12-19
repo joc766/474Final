@@ -2,6 +2,9 @@ from deck import Deck
 from policy import CribbagePolicy, CompositePolicy, GreedyThrower, GreedyPegger
 import random
 from scoring import score
+from train import create_encodings
+
+from tensorflow.keras.models import load_model
 
 class MyPolicy(CribbagePolicy):
     def __init__(self, game):
@@ -16,7 +19,30 @@ class MyPolicy(CribbagePolicy):
             am_dealer -- a boolean flag indicating whether the crib
                          belongs to this policy
         """
-        return keep, throw
+
+        # load the tensorflow model
+        model = load_model('pegging_model/saved_model.pb')
+
+        max_move = None
+        max_ev = float('-inf')
+
+        # all of the possible combination of moves where we keep 4 cards and throw 2 out of our 6 cards
+        for indices in self._policy._game.throw_indices():
+            keep = [hand[i] for i in indices]
+            throw = [hand[i] for i in range(6) if i not in indices]
+            # create the input data for the model
+            input_data = create_encodings(keep)
+            # predict the probability of each possible score
+            prediction = model.predict(input_data)
+            # the prediction is a list of 21 values, each representing the probability of us scoring -10 to 10 points respectively
+            # we want to calculate the expected value of each move (where move is the set of cards we end up keeping)
+            expected_value = 0
+            for i in range(21):
+                expected_value += (i-10) * prediction[i]
+            if expected_value > max_ev:
+                max_ev = expected_value
+                max_move = (keep, throw)
+        return max_move
 
     def apply_heuristic(self, am_dealer, maxes):
         # keep 5s or cards that add up to 5
