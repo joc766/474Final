@@ -304,6 +304,7 @@ def evaluate_policies(game, p0_policy, p1_policy, count):
     p1_total = 0
     total_hands = 0
     for g in range(count):
+        print(f"{g}/count")
         if g % 2 == 0:
             results = game.play(p0_policy, p1_policy, lambda mess: None)
             p0_pts = results[0]

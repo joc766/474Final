@@ -5,6 +5,7 @@ from scoring import score
 from train import create_encodings
 
 from tensorflow.keras.models import load_model
+import numpy as np
 
 class MyPolicy(CribbagePolicy):
     def __init__(self, game):
@@ -19,21 +20,22 @@ class MyPolicy(CribbagePolicy):
             am_dealer -- a boolean flag indicating whether the crib
                          belongs to this policy
         """
-
+        print("HERE")
         # load the tensorflow model
-        model = load_model('pegging_model/saved_model.pb')
+        model = load_model('model.h5')
 
         max_move = None
         max_ev = float('-inf')
 
         # all of the possible combination of moves where we keep 4 cards and throw 2 out of our 6 cards
         for indices in self._policy._game.throw_indices():
-            keep = [hand[i] for i in indices]
-            throw = [hand[i] for i in range(6) if i not in indices]
+            throw = [hand[i] for i in indices]
+            keep = [hand[i] for i in range(6) if i not in indices]
             # create the input data for the model
-            input_data = create_encodings(keep)
+            cards = [(c.rank(), c.suit()) for c in keep]
+            input_data = np.array([create_encodings(cards)])
             # predict the probability of each possible score
-            prediction = model.predict(input_data)
+            prediction = model.predict(input_data)[0]
             # the prediction is a list of 21 values, each representing the probability of us scoring -10 to 10 points respectively
             # we want to calculate the expected value of each move (where move is the set of cards we end up keeping)
             expected_value = 0
