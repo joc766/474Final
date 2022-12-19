@@ -2,7 +2,7 @@
 import numpy as np 
 
 from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.layers import Input, Dense, Dropout
+from tensorflow.keras.layers import Input, Dense, Dropout, Flatten
 from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.utils import to_categorical
 
@@ -12,7 +12,7 @@ from test_policies import create_agent
 
 from simulate import simulate
 
-N_SIMULATIONS = 150
+N_SIMULATIONS = 1000
 
 # Create a list of all possible ranks and suits
 RANKS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
@@ -65,8 +65,8 @@ def main():
     # one-hot encode the y data
     y_encoded = []
     for y in y_all:
-        encoding = np.zeros(size_range+1)
-        encoding[y - min_y] = 1
+        encoding = np.zeros(21)
+        encoding[y+10] = 1
         y_encoded.append(encoding)
     y_encoded = np.array(y_encoded)
     print(y_encoded)
@@ -86,21 +86,22 @@ def main():
     print(len(y_train))
 
     model = Sequential()
-    model.add(Dense(10, activation='relu', input_shape=x_train.shape[1:]))
+    model.add(Flatten(input_shape=(4, 17)))
+    model.add(Dense(10, activation='relu', input_shape=(68,)))
     model.add(Dropout(0.1))
     model.add(Dense(y_train.shape[1], activation='softmax'))
 
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_absolute_error'])
+    model.compile(optimizer='adam', loss='categorical_crossentropy')
 
-    model.fit(x=x_train, y=y_train, batch_size=5, epochs=200)
+    model.fit(x=x_train, y=y_train, batch_size=5, epochs=400)
 
     # Evaluate the model on the testing data
     predictions = model.predict(x_test)
     correct = y_test
     for p, c in zip(predictions, correct):
-        pred = [round(x,2) for x in p]
-        print(f"PREDICTION:{pred} ")
-        print(f"CORRECT: {c}")
+        print(f"PREDICTION: {', '.join('{:.2f}'.format(np.round(x,2)) for x in p)}")
+        print(f"CORRECT:    {', '.join('{:.2f}'.format(np.round(x,2)) for x in c)}\n")
+
     print(model.summary())
 
 if __name__ == "__main__":
