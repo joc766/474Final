@@ -13,7 +13,7 @@ from test_policies import create_agent
 
 from simulate import simulate
 
-N_SIMULATIONS = 200
+N_SIMULATIONS = 12000
 
 # Create a list of all possible ranks and suits
 RANKS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
@@ -74,7 +74,7 @@ def main():
     y_encoded = np.array(y_encoded)
     
     # split into training data and test data
-    test_size = int(len(x_all) / 5)
+    test_size = 100
 
     x_test = x_encoded[:test_size] 
     y_test = y_encoded[:test_size]
@@ -92,7 +92,7 @@ def main():
 
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    model.fit(x=x_train, y=y_train, batch_size=10, epochs=200)
+    model.fit(x=x_train, y=y_train, batch_size=25, epochs=100)
 
     # Save the model
     model.save("pegging_model", save_format="tf")
