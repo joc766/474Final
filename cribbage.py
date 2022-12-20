@@ -190,6 +190,7 @@ class Game:
         # loop until one player has points to win
         while max(scores) < self.winning_score():
             log("Score: " + str(scores))
+            saved_score = scores[:]
             # deal cards
             per_player = self.keep_cards() + self.throw_cards()
             in_play = self.deal(2 * per_player + 1)
@@ -261,6 +262,10 @@ class Game:
                     passes = [False, False]
                     last_played = played
                     played = 0
+                
+            # print(saved_score, scores)
+            
+            # print(f"PEGGING RESULT: {(scores[0] - scores[1]) - (saved_score[0] - saved_score[1])}")
 
             # score non-dealer's hand
             if max(scores) < self.winning_score():
@@ -294,7 +299,7 @@ def peg(game, list):
     player = 1
     for play in list:
         history, score = history.play(game, play, player)
-        print(play, score)
+        # print(play, score)
         player = 1 - player
 
 

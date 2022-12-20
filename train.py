@@ -14,7 +14,13 @@ from test_policies import create_agent
 
 from simulate import simulate
 
-N_SIMULATIONS = 12000
+import os
+
+# Set the TF_USE_CUDA environment variable
+os.environ['TF_USE_CUDA'] = 'false'
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
+
+N_SIMULATIONS = 100 if len(sys.argv) <= 1 else int(sys.argv[1])
 
 # Create a list of all possible ranks and suits
 RANKS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
@@ -55,27 +61,30 @@ def main():
         if i % 100 == 0:
             print("Simulation", i, file=sys.stderr)
         game = PeggingGame(4)
-        agent1 = create_agent("mcts")
-        agent2 = create_agent("minimax")
+        agent1 = create_agent("heuristic")
+        agent2 = create_agent("greedy")
         sim_results = simulate(game, agent1, agent2)
         x_all.append(sim_results[0])
         y_all.append(sim_results[1])
     
     print("SIMULATION COMPLETE", file=sys.stderr)
-
     # one-hot encode the x data
     x_encoded = np.array([create_encodings(cards) for cards in x_all])
+    print(x_encoded.shape)
+    print(x_encoded[:5])
 
     # one-hot encode the y data
     y_encoded = []
     for y in y_all:
-        encoding = np.zeros(21)
-        encoding[y+10] = 1
+        encoding = np.zeros(63)
+        encoding[y+31] = 1
         y_encoded.append(encoding)
     y_encoded = np.array(y_encoded)
+    print(y_encoded.shape)
+    print(y_encoded[:5])
     
     # split into training data and test data
-    test_size = 100
+    test_size = 10
 
     x_test = x_encoded[:test_size] 
     y_test = y_encoded[:test_size]
@@ -93,17 +102,17 @@ def main():
 
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    model.fit(x=x_train, y=y_train, batch_size=25, epochs=100)
+    model.fit(x=x_train, y=y_train, batch_size=5, epochs=100)
 
     # Save the model
-    model.save("model.h5", save_format="tf")
+    model.save("greedy_model.h5", save_format="tf")
 
     # Evaluate the model on the testing data
     predictions = model.predict(x_test)
     correct = y_test
     for p, c in zip(predictions, correct):
-        print(f"PREDICTION: {', '.join('{:.2f}'.format(np.round(x,2)) for x in p)}")
-        print(f"CORRECT:    {', '.join('{:.2f}'.format(np.round(x,2)) for x in c)}\n")
+        print(f"PREDICTION: {', '.join('{}:{:.2f}'.format(i-31,np.round(x,2)) for i,x in enumerate(p) if x > 0.01)}")
+        print(f"CORRECT:    {[i-31 for i,x in enumerate(c) if x > 0][0]}\n")
 
 if __name__ == "__main__":
     main()
