@@ -1,7 +1,7 @@
 import random
 from abc import ABC, abstractmethod
 
-import scoring
+from scoring import greedy_throw
 
 class CribbagePolicy(ABC):
     """ An abstract base class for cribbage policies. """
@@ -205,7 +205,7 @@ class GreedyThrower(ThrowPolicy):
             am_dealer -- a boolean flag indicating whether the crib
                          belongs to this policy
         """
-        keep, throw, net_score = scoring.greedy_throw(self._game, hand, 1 if am_dealer else -1)
+        keep, throw, net_score = greedy_throw(self._game, hand, 1 if am_dealer else -1)
         return keep, throw
     
     

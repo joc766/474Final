@@ -1,11 +1,13 @@
-from deck import Deck
-from policy import CribbagePolicy, CompositePolicy, GreedyThrower, GreedyPegger
 import random
-from scoring import score
-from train import create_encodings
 
 from tensorflow.keras.models import load_model
 import numpy as np
+
+from deck import Deck
+from policy import CribbagePolicy, CompositePolicy, GreedyThrower, GreedyPegger
+from scoring import score
+from train import create_encodings
+
 
 model = load_model("greedy_model.h5")
 

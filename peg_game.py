@@ -1,5 +1,5 @@
 from game import Game, State
-import cribbage
+from cribbage import Game as CribbageGame
 from pegging import Pegging
 
 
@@ -11,7 +11,7 @@ class PeggingGame(Game):
             cards -- a positive integer
         """
         self._cards = cards
-        self._game = cribbage.Game()
+        self._game = CribbageGame()
 
 
     def initial_state(self):

@@ -1,7 +1,7 @@
 
-import numpy as np 
 import sys
 
+import numpy as np 
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Input, Dense, Dropout, Flatten
 from tensorflow.keras.optimizers import SGD
@@ -10,15 +10,8 @@ from tensorflow.saved_model import SaveOptions
 
 from peg_game import PeggingGame
 from test_policies import create_agent
-
-
 from simulate import simulate
 
-import os
-
-# Set the TF_USE_CUDA environment variable
-os.environ['TF_USE_CUDA'] = 'false'
-os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
 N_SIMULATIONS = 100 if len(sys.argv) <= 1 else int(sys.argv[1])
 
@@ -102,10 +95,10 @@ def main():
 
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    model.fit(x=x_train, y=y_train, batch_size=5, epochs=100)
+    model.fit(x=x_train, y=y_train, batch_size=20, epochs=100)
 
     # Save the model
-    model.save("greedy_model.h5", save_format="tf")
+    model.save("backup_greedy_model.h5", save_format="tf")
 
     # Evaluate the model on the testing data
     predictions = model.predict(x_test)

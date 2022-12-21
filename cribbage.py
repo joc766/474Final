@@ -1,8 +1,7 @@
 import itertools as it
-import sys
 import copy
 
-import scoring
+from scoring import score
 from deck import Deck,Card
 from pegging import Pegging
 
@@ -269,14 +268,14 @@ class Game:
 
             # score non-dealer's hand
             if max(scores) < self.winning_score():
-                hand_score = scoring.score(self, keeps[1 - dealer][0], turn, False)
+                hand_score = score(self, keeps[1 - dealer][0], turn, False)
                 log("NON-DEALER: " + str(keeps[1 - dealer][0]) + " " + str(hand_score))
                 scores[1 - dealer] += hand_score[0]
                 log(scores)
 
             # score dealer's hand
             if max(scores) < self.winning_score():
-                hand_score = scoring.score(self, keeps[dealer][0], turn, False)
+                hand_score = score(self, keeps[dealer][0], turn, False)
                 log("DEALER: " + str(keeps[dealer][0]) + " " + str(hand_score))
                 scores[dealer] += hand_score[0]
                 log(scores)
@@ -284,7 +283,7 @@ class Game:
             # score crib
             if max(scores) < self.winning_score():
                 crib = keeps[dealer][1] + keeps[1 - dealer][1]
-                hand_score = scoring.score(self, crib, turn, True)
+                hand_score = score(self, crib, turn, True)
                 log("CRIB: " + str(crib) + str(hand_score))
                 scores[dealer] += hand_score[0]
                 log(scores)

@@ -2,12 +2,12 @@ import random
 import sys
 import argparse
 
-import peg_policies.minimax_policy as minimax
 from peg_game import PeggingGame
-from peg_policies.heuristic_policy import heuristic_policy
-from peg_policies.greedy_policy import greedy_policy
-from peg_policies.mcts_policy import mcts_policy
-from peg_policies.minimax_policy import minimax_policy
+from minimax_policy import Heuristic
+from heuristic_policy import heuristic_policy
+from greedy_policy import greedy_policy
+from mcts_policy import mcts_policy
+from minimax_policy import minimax_policy
 
 TIME = 0.05
 DEPTH = 14
@@ -95,7 +95,7 @@ def create_agent(agent):
         return lambda: mcts_policy(TIME)
     elif agent == "minimax":
         h = (lambda pos: pos.score()[0] - pos.score()[1])
-        return lambda: minimax_policy(DEPTH, minimax.Heuristic(h))
+        return lambda: minimax_policy(DEPTH, Heuristic(h))
     elif agent == "greedy":
         return lambda: greedy_policy()
     elif agent == "heuristic":
