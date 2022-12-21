@@ -14,6 +14,7 @@ from simulate import simulate
 
 
 N_SIMULATIONS = 100 if len(sys.argv) <= 1 else int(sys.argv[1])
+MODEL_LOCATION = "new_model.h5"
 
 # Create a list of all possible ranks and suits
 RANKS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
@@ -51,8 +52,8 @@ def main():
     y_all = []
 
     for i in range(N_SIMULATIONS):
-        if i % 100 == 0:
-            print("Simulation", i, file=sys.stderr)
+        # if i % 100 == 0:
+        #     print("Simulation", i, file=sys.stderr)
         game = PeggingGame(4)
         agent1 = create_agent("heuristic")
         agent2 = create_agent("greedy")
@@ -60,7 +61,8 @@ def main():
         x_all.append(sim_results[0])
         y_all.append(sim_results[1])
     
-    print("SIMULATION COMPLETE", file=sys.stderr)
+    # print("SIMULATION COMPLETE", file=sys.stderr)
+    
     # one-hot encode the x data
     x_encoded = np.array([create_encodings(cards) for cards in x_all])
     print(x_encoded.shape)
@@ -98,7 +100,7 @@ def main():
     model.fit(x=x_train, y=y_train, batch_size=20, epochs=100)
 
     # Save the model
-    model.save("backup_greedy_model.h5", save_format="tf")
+    model.save(MODEL_LOCATION, save_format="tf")
 
     # Evaluate the model on the testing data
     predictions = model.predict(x_test)

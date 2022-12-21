@@ -9,7 +9,7 @@ from scoring import score
 from train import create_encodings
 
 
-model = load_model("greedy_model.h5")
+model = load_model("good_greedy_model.h5")
 
 class MyPolicy(CribbagePolicy):
     def __init__(self, game):
@@ -41,6 +41,7 @@ class MyPolicy(CribbagePolicy):
             total_score = 0
             cards = [(c.rank(), c.suit()) for c in keep]
             input_data = np.array([create_encodings(cards)])
+            """ This is the part of my mode than applies the neural network """
             # predict the probability of each possible score
             prediction = model.predict(input_data, verbose=0)[0]
             # the prediction is a list of 21 values, each representing the probability of us scoring -10 to 10 points respectively
@@ -66,8 +67,8 @@ class MyPolicy(CribbagePolicy):
             elif move[2] == max_score:
                 maxes.append(move)
         choice = maxes[0]
-        # print(f"MY HAND: {choice[0]}")
-        # print(f"PREDICTION: {', '.join('{}:{:.2f}'.format(i-31, np.round(x,2)) for i, x in enumerate(choice[3]))}")
+        print(f"MY HAND: {choice[0]}")
+        print(f"PREDICTION: {', '.join('{}:{:.2f}'.format(i-31, np.round(x,2)) for i, x in enumerate(choice[3]))}")
         keep, throw, _, _ = choice
         return keep, throw 
 

@@ -1,7 +1,8 @@
 import itertools as it
 import copy
+import sys
 
-from scoring import score
+import scoring
 from deck import Deck,Card
 from pegging import Pegging
 
@@ -264,18 +265,18 @@ class Game:
                 
             # print(saved_score, scores)
             
-            # print(f"PEGGING RESULT: {(scores[0] - scores[1]) - (saved_score[0] - saved_score[1])}")
+            print(f"PEGGING RESULT: {(scores[0] - scores[1]) - (saved_score[0] - saved_score[1])}")
 
             # score non-dealer's hand
             if max(scores) < self.winning_score():
-                hand_score = score(self, keeps[1 - dealer][0], turn, False)
+                hand_score = scoring.score(self, keeps[1 - dealer][0], turn, False)
                 log("NON-DEALER: " + str(keeps[1 - dealer][0]) + " " + str(hand_score))
                 scores[1 - dealer] += hand_score[0]
                 log(scores)
 
             # score dealer's hand
             if max(scores) < self.winning_score():
-                hand_score = score(self, keeps[dealer][0], turn, False)
+                hand_score = scoring.score(self, keeps[dealer][0], turn, False)
                 log("DEALER: " + str(keeps[dealer][0]) + " " + str(hand_score))
                 scores[dealer] += hand_score[0]
                 log(scores)
@@ -283,7 +284,7 @@ class Game:
             # score crib
             if max(scores) < self.winning_score():
                 crib = keeps[dealer][1] + keeps[1 - dealer][1]
-                hand_score = score(self, crib, turn, True)
+                hand_score = scoring.score(self, crib, turn, True)
                 log("CRIB: " + str(crib) + str(hand_score))
                 scores[dealer] += hand_score[0]
                 log(scores)
@@ -308,7 +309,7 @@ def evaluate_policies(game, p0_policy, p1_policy, count):
     p1_total = 0
     total_hands = 0
     for g in range(count):
-        print(f"{g}/count")
+        print(f"{g}/{count}", file=sys.stderr)
         if g % 2 == 0:
             results = game.play(p0_policy, p1_policy, lambda mess: None)
             p0_pts = results[0]
