@@ -1,3 +1,14 @@
+## Description:
+
+I have trained a neural network using tensorflow to predict the outcome of the pegging phase of cribbage
+based on the four cards that a player has in their hand. The neural network, given a list of the cards in a player's hand, produces a probability distribution of various different outcomes of the pegging phase. Originally, I wanted to produce a numeric prediction for the number of points scored. However, I found that it would be more 
+useful to use the probability distribution of each move when it came to the application of the 
+neural network to the keep phase of cribbage. That way, I could get the expected reward for a 
+given action the same way that we did for Markov-Decision processes. So, to produce an 
+expected value, I summed the probability of an outcome multiplied by the reward for that outcome for each possible 
+combination of four cards from the six that were dealt to the player. 
+
+
 ## How to use:
 
 Makefile includes instructions to make two executeables: CreateModel and TestModel. 
@@ -18,17 +29,6 @@ Makefile includes instructions to make two executeables: CreateModel and TestMod
       If the default model (`good_greedy_model.h5`) does not work, change the file in load_model 
       on line 12 in my_policy.py to the `new_model.h5` that was trained using the CreateModel 
       executable. Note that unless trained for a similar amount of time this will perform poorly.
-
-
-## Description:
-
-I have trained a neural network using tensorflow to predict the outcome of the pegging phase of cribbage
-based on the four cards that a player has in their hand. The neural network, given a list of the cards in a player's hand, produces a probability distribution of various different outcomes of the pegging phase. Originally, I wanted to produce a numeric prediction for the number of points scored. However, I found that it would be more 
-useful to use the probability distribution of each move when it came to the application of the 
-neural network to the keep phase of cribbage. That way, I could get the expected reward for a 
-given action the same way that we did for Markov-Decision processes. So, to produce an 
-expected value, I summed the probability of an outcome multiplied by the reward for that outcome for each possible 
-combination of four cards from the six that were dealt to the player. 
 
 
 ## Steps:
